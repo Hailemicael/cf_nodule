@@ -1,0 +1,49 @@
+# CF-Nodule PUBLISH config — full backbone, rebalanced/stronger CFA.
+# Goal: improve BOTH faithfulness and concept-alignment on real LIDC, so CFS rises.
+# Same data/model as default.yaml (fair vs the --cfa off baseline run with this file).
+seed: 7
+
+data:
+  root: "./data/LIDC-IDRI"
+  cache: "./data/cache"
+  patch_size: 64
+  min_radiologists: 3
+  malignancy_threshold: 3.0
+  exclude_indeterminate: true
+  concepts:
+    - subtlety
+    - calcification
+    - sphericity
+    - margin
+    - lobulation
+    - spiculation
+    - texture
+  val_fraction: 0.15
+  test_fraction: 0.15
+  group_by: patient
+
+model:
+  base_channels: 32
+  depth: 4
+
+train:
+  epochs: 120
+  batch_size: 16
+  lr: 2.0e-4
+  weight_decay: 1.0e-4
+  amp: true
+  w_seg: 1.0
+  w_concept: 0.5
+  w_malignancy: 1.0
+  w_cfa: 0.5                 # overall CFA strength
+  cfa_w_faith: 1.0          # faithfulness term weight (already works)
+  cfa_w_align: 2.0          # alignment term weight (boosted: was being sacrificed)
+  cfa_warmup_epochs: 5      # start CFA earlier -> more epochs under the objective
+  early_stop_patience: 25
+
+eval:
+  attribution: gradcam
+  faithfulness_steps: 25
+  auc_iou_thresholds: 25
+  bootstrap: 5000
+  selective_signal: confidence

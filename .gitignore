@@ -1,0 +1,23 @@
+# Data and large artifacts (never commit)
+data/
+runs/
+runs_*_backup/
+venv/
+*.pt
+*.npz
+*.dcm
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Anonymized paper (excluded from repo)
+*.pdf

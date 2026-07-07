@@ -1,0 +1,46 @@
+# CF-Nodule configuration
+seed: 7
+
+data:
+  root: "./data/LIDC-IDRI"      # NBIA download target (see src/data/download_lidc.py)
+  cache: "./data/cache"          # extracted patches cache (.npz)
+  patch_size: 64                 # 2D patch around each nodule centroid
+  min_radiologists: 3            # keep nodules annotated by >= N radiologists
+  malignancy_threshold: 3.0      # mean malignancy rating > T -> malignant (1)
+  exclude_indeterminate: true    # drop nodules with mean rating == 3.0
+  concepts:                      # LIDC semantic attributes used as concept heads
+    - subtlety
+    - calcification
+    - sphericity
+    - margin
+    - lobulation
+    - spiculation
+    - texture
+  val_fraction: 0.15
+  test_fraction: 0.15
+  group_by: patient              # patient-level split (no leakage)
+
+model:
+  base_channels: 32
+  depth: 4
+
+train:
+  epochs: 80
+  batch_size: 16
+  lr: 2.0e-4
+  weight_decay: 1.0e-4
+  amp: true
+  # loss weights
+  w_seg: 1.0
+  w_concept: 0.5
+  w_malignancy: 1.0
+  w_cfa: 0.3                     # Concept-Faithfulness Alignment regularizer
+  cfa_warmup_epochs: 10         # start CFA after the model is reasonable
+  early_stop_patience: 15
+
+eval:
+  attribution: gradcam          # gradcam | integrated_gradients | occlusion
+  faithfulness_steps: 25
+  auc_iou_thresholds: 25
+  bootstrap: 1000               # CIs for small samples
+  selective_signal: confidence  # confidence | cfs | confidence_cfs

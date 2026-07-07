@@ -1,0 +1,48 @@
+# CF-Nodule QUICK config — smoke test of the full pipeline.
+# Same schema as default.yaml but tiny/fast: few epochs, short warmup, light eval.
+# Use to confirm the whole chain (cache -> train cfa on/off -> evaluate) runs green
+# before committing a full Kaggle session. NOT for reported results.
+seed: 7
+
+data:
+  root: "./data/LIDC-IDRI"
+  cache: "./data/cache"
+  patch_size: 64
+  min_radiologists: 3
+  malignancy_threshold: 3.0
+  exclude_indeterminate: true
+  concepts:
+    - subtlety
+    - calcification
+    - sphericity
+    - margin
+    - lobulation
+    - spiculation
+    - texture
+  val_fraction: 0.15
+  test_fraction: 0.15
+  group_by: patient
+
+model:
+  base_channels: 16              # smaller backbone for a fast smoke test
+  depth: 3
+
+train:
+  epochs: 12
+  batch_size: 16
+  lr: 3.0e-4
+  weight_decay: 1.0e-4
+  amp: true
+  w_seg: 1.0
+  w_concept: 0.5
+  w_malignancy: 1.0
+  w_cfa: 0.3
+  cfa_warmup_epochs: 4           # start CFA early so the smoke test exercises it
+  early_stop_patience: 8
+
+eval:
+  attribution: gradcam
+  faithfulness_steps: 16
+  auc_iou_thresholds: 16
+  bootstrap: 500
+  selective_signal: confidence

@@ -1,0 +1,16 @@
+{
+  "Vanilla": {
+    "malignancy_AUROC": 0.732,
+    "faithfulness": 0.825,
+    "concept_alignment": 0.104,
+    "lesion_overlap_descriptor": 0.057,
+    "CFS": 0.075
+  },
+  "CFA (ours)": {
+    "malignancy_AUROC": 0.918,
+    "faithfulness": 0.757,
+    "concept_alignment": 0.132,
+    "lesion_overlap_descriptor": 0.041,
+    "CFS": 0.103
+  }
+}
